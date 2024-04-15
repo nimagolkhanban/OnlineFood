@@ -18,6 +18,7 @@ class UserManager(BaseUserManager):
             last_name=last_name,
             phone_number=phone_number
         )
+        # tip: next line will store the password in encoded
         user.set_password(password)
         # tip: next line will store the data in default database that we mention in setting
         user.save(using=self._db)
