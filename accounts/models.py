@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models import OneToOneField
+from django.dispatch import receiver
+from django.db.models.signals import post_save, pre_save
 
 
 class UserManager(BaseUserManager):
@@ -25,7 +27,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, first_name, last_name, username, phone_number,  email, password=None):
+    def create_superuser(self, first_name, last_name, username, phone_number, email, password=None):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
@@ -102,7 +104,5 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
-
-
 
 
