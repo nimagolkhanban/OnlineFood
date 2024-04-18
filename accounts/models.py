@@ -73,9 +73,13 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.email
 
+    # tip : has_perm(self, perm, obj=None): This method is used to check if a user has a
+    # specific permission for a particular object (optional).
     def has_perm(self, perm, obj=None):
         return self.is_admin
 
+    # tip : has_module_perms(self, app_label): This method is used to check if a user has any permissions
+    # for a specific Django app (identified by its app label).
     def has_module_perms(self, app_label):
         return True
 
