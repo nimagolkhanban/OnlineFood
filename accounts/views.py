@@ -21,9 +21,23 @@ class RegisterUserView(View):
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
+            # tip : old way
+            # password = form.cleaned_data["password"]
+            # user = form.save(commit=False)
+            # user.set_password(password)
+            # user.role = User.CUSTOMER
+            # form.save()
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            phone_number = form.cleaned_data['phone_number']
+            password = form.cleaned_data['password']
+            user = User.objects.create_user(first_name=first_name, last_name=last_name,password=password,
+                                            username=username, email=email, phone_number=phone_number)
             user.role = User.CUSTOMER
-            form.save()
+            user.save()
+
         context = {
             "form": form
         }
