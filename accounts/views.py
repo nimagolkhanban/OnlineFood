@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.views import View
 
@@ -36,8 +37,10 @@ class RegisterUserView(View):
             user = User.objects.create_user(first_name=first_name, last_name=last_name,password=password,
                                             username=username, email=email, phone_number=phone_number)
             user.role = User.CUSTOMER
+            messages.success(request, 'user created successfully!')
             user.save()
-
+        else :
+            messages.error(request, "invalid form please check again")
         context = {
             "form": form
         }
