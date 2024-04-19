@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # apps
-    'accounts.apps.AccountsConfig'
-
+    'accounts',
+    'vendor',
     # third packages
 
 ]

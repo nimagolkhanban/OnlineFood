@@ -68,18 +68,20 @@
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="login-option">
-                                
-								<a class="cs-color cs-popup-joinus-btn login-popup" data-target="#sign-in" data-toggle="modal" href="#user-register">Login</a> /
-                                
-                                    <span>
-                                        <a class="cs-color cs-popup-joinus-btn login-popup ml-0" data-target="#sign-in" data-toggle="modal" href="{% url "registeruser" %}">
-                                            Register
-                                        </a>
-                                    </span>
-                                
-                                <a class="get-start-btn" href="register-restaurant.html">
+{#data-target="#sign-in" data-toggle="modal" it should be on a tag bellow#}
+								<a href="#user-register" class="cs-color cs-popup-joinus-btn login-popup"  >
+                                    Login
+                                </a> /
+
+                                    
+                                <a href="{% url 'registeruser' %}" class="cs-color cs-popup-joinus-btn login-popup ml-0" >
+                                    Register
+                                </a>
+                                    
+
+                                <a class="get-start-btn" href="{% url "registervendor" %}">
 									Register
-									Restaurant 
+									Restaurant
                                 </a>
 							</div>
 						</div>

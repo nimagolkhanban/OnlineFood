@@ -1,9 +1,11 @@
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
 from accounts.forms import UserForm
-from accounts.models import User
+from accounts.models import User, UserProfile
+from vendor.forms import VendorForm
+from vendor.models import Vendor
 
 
 # Create your views here.
@@ -45,5 +47,45 @@ class RegisterUserView(View):
             "form": form
         }
         return render(request, self.template_name, context)
+
+
+class RegisterVendorView(View):
+    user_form = UserForm
+    vendor_form = VendorForm
+
+    def get(self, request):
+        context = {
+            'form': self.user_form,
+            'v_form': self.vendor_form,
+        }
+        return render(request, "accounts/vendor_registration.html", context)
+
+    def post(self, request):
+        us_form = self.user_form(request.POST)
+        # tip : remember request.file is for accepting the image file that send by user in request
+        ven_form = self.vendor_form(request.POST, request.FILES)
+        if us_form.is_valid() and ven_form.is_valid():
+            first_name = us_form.cleaned_data['first_name']
+            last_name = us_form.cleaned_data['last_name']
+            username = us_form.cleaned_data['username']
+            email = us_form.cleaned_data['email']
+            phone_number = us_form.cleaned_data['phone_number']
+            password = us_form.cleaned_data['password']
+            user = User.objects.create_user(first_name=first_name, last_name=last_name, password=password,
+                                            username=username, email=email, phone_number=phone_number)
+            user.role = User.RESTAURANT
+            user.save()
+            vendor_name = ven_form.cleaned_data.get('vendor_name')
+            vendor_license = ven_form.cleaned_data.get('vendor_license')
+            vendor_profile = UserProfile.objects.get(user=user)
+            vendor = Vendor.objects.create(user=user, user_profile=vendor_profile, vendor_license=vendor_license,
+                                           vendor_name=vendor_name)
+            vendor.save()
+            messages.success(request, "your restaurant signed up successfully please waite till our admin register your account")
+            return redirect("registervendor")
+        else:
+            messages.error(request, "there is something wrong with your registration data")
+            return redirect("registervendor")
+
 
 
