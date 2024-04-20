@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+	<title>
+        {% block title %}
+        	Login – FoodBakery
+        {% endblock %}
+    </title>
+
+
+		<!-- Main Section Start -->
+		{% block content %}
+			<div class="main-section">
+			<div class="page-section nopadding cs-nomargin" style="margin-top: 0px;padding-top: 60px;padding-bottom: 60px;margin-bottom: 0px;">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+							<div class="user-dashboard loader-holder" style="width: 600px; min-height: auto">
+								<div class="user-holder">
+                            <h4 class="text-center" style="margin-bottom: 0;">LOGIN TO FOODONLINE</h4>
+                                    <br>
+                            <p class="text-center">Please Enter Your Information To Login And If You Don't Have an Account Signup.</p>
+                            <hr>
+                            <div id="restaurant-sets-holder">
+                                <form class="form-fields-set foodbakery-dev-restaurant-form" method="POST" action="{% url "login" %}">
+                                    {% csrf_token %}
+                                    <ul class="register-add-restaurant-tab-container restaurant-information-tab-container">
+                                        <li>
+                                            <div class="row">
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="row">
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                    <div class="field-holder">
+                                                                        <label>Email Address</label>
+                                                                        <input type="email" name="email" placeholder="please enter your email">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                                    <div class="field-holder">
+                                                                        <label>Password</label>
+                                                                        <input type="password" name="password" placeholder="please enter your password">
+                                                                    </div>
+                                                                </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                                <li style="color: red;">
+                                                    {{ form.non_field_errors }}
+                                                </li>
+                                        <li>
+
+                                            <div class="row">
+
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                    <div class="field-holder">
+                                                        <div class="payment-holder">
+                                                            <input type="submit" value="register" id="btn-next-restaurant-information" class="bgcolor">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                    {% include "inc/alerts.html" %}
+                                                </div>
+                                            </div>
+
+
+
+                                        </li>
+                                    </ul>
+                                </form>
+                            </div>
+                        </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Main Section End -->
+		{% endblock %}
+
+

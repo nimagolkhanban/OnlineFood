@@ -65,6 +65,8 @@ class User(AbstractBaseUser):
     modified_at = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    # tip : adding this field to a custom user model is very important because authentication in login logic will
+    # check that is this flag is green or not and then authenticate the user base on username and password
     is_active = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
 

@@ -1,7 +1,6 @@
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.shortcuts import render, redirect
 from django.views import View
-
 from accounts.forms import UserForm
 from accounts.models import User, UserProfile
 from vendor.forms import VendorForm
@@ -88,4 +87,30 @@ class RegisterVendorView(View):
             return redirect("registervendor")
 
 
+class LoginView(View):
 
+    def get(self, request):
+        return render(request, 'accounts/login.html')
+
+    def post(self, request):
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        user = auth.authenticate(email=email, password=password)
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request, "you logged in successfully")
+            return redirect("dashboard")
+        messages.error(request, "email or password is wrong, please try again")
+        return redirect("login")
+
+
+class LogoutView(View):
+    def get(self, request):
+        auth.logout(request)
+        return redirect("home")
+
+
+class DashboardView(View):
+
+     def get(self, request):
+         return render(request, 'accounts/dashboard.html')

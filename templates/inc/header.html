@@ -68,21 +68,30 @@
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<div class="login-option">
-{#data-target="#sign-in" data-toggle="modal" it should be on a tag bellow#}
-								<a href="#user-register" class="cs-color cs-popup-joinus-btn login-popup"  >
-                                    Login
-                                </a> /
+                                {% if user.is_authenticated %}
+                                	<a href="{% url 'logout' %}" class="cs-color cs-popup-joinus-btn login-popup text-danger"  >
+                                        Logout
+                                    </a>
+                                    <a href="{% url 'dashboard' %}" class="cs-color cs-popup-joinus-btn login-popup"  >
+                                        Dashboard
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'login' %}" class="cs-color cs-popup-joinus-btn login-popup"  >
+                                        Login
+                                    </a> /
 
                                     
-                                <a href="{% url 'registeruser' %}" class="cs-color cs-popup-joinus-btn login-popup ml-0" >
-                                    Register
-                                </a>
+                                    <a href="{% url 'registeruser' %}" class="cs-color cs-popup-joinus-btn login-popup ml-0" >
+                                        Register
+                                    </a>
                                     
 
-                                <a class="get-start-btn" href="{% url "registervendor" %}">
-									Register
-									Restaurant
-                                </a>
+                                    <a class="get-start-btn" href="{% url "registervendor" %}">
+									    Register
+									    Restaurant
+                                    </a>
+                                    {% endif %} 
+								
 							</div>
 						</div>
 					</div>
