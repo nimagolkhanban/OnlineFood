@@ -1,10 +1,13 @@
 from django.contrib import messages, auth
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views import View
 from accounts.forms import UserForm
 from accounts.models import User, UserProfile
+from accounts.utils import detectuser
 from vendor.forms import VendorForm
 from vendor.models import Vendor
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
@@ -14,6 +17,9 @@ class RegisterUserView(View):
     template_name = 'accounts/user_registration.html'
 
     def get(self, request):
+        if request.user.is_authenticated:
+            messages.warning(request, "you are already logged in")
+            return redirect("login")
         form = self.form_class()
         context = {
             'form': form
@@ -53,6 +59,9 @@ class RegisterVendorView(View):
     vendor_form = VendorForm
 
     def get(self, request):
+        if request.user.is_authenticated:
+            messages.warning(request, "you are already logged in")
+            return redirect("login")
         context = {
             'form': self.user_form,
             'v_form': self.vendor_form,
@@ -90,6 +99,9 @@ class RegisterVendorView(View):
 class LoginView(View):
 
     def get(self, request):
+        if request.user.is_authenticated:
+            messages.warning(request, "you are already logged in")
+            return redirect("home")
         return render(request, 'accounts/login.html')
 
     def post(self, request):
@@ -99,7 +111,7 @@ class LoginView(View):
         if user is not None:
             auth.login(request, user)
             messages.success(request, "you logged in successfully")
-            return redirect("dashboard")
+            return redirect("myaccount")
         messages.error(request, "email or password is wrong, please try again")
         return redirect("login")
 
@@ -110,7 +122,27 @@ class LogoutView(View):
         return redirect("home")
 
 
-class DashboardView(View):
+# tip : this view is really tricky because its actually does not do anything
+# it's just for detecting the user type and redirect to the proper url
+@login_required(login_url='login')
+def myaccount(request):
+    user = request.user
+    redirect_url = detectuser(user)
+    return redirect(redirect_url)
 
-     def get(self, request):
-         return render(request, 'accounts/dashboard.html')
+
+class VendorDashboardView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request):
+        return render(request, 'accounts/vendor_dashboard.html')
+
+
+class CustomerDashboardView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request):
+        return render(request, 'accounts/customer_dashboard.html')
+
+
+
