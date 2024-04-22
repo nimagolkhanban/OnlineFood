@@ -2,4 +2,5 @@
 {% block content %}
     {% include "inc/alerts.html" %}
 	<p>dashboard</p>
+    {{ request.user.get_role }}
 {% endblock %}

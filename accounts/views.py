@@ -1,5 +1,6 @@
 from django.contrib import messages, auth
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.views import View
 from accounts.forms import UserForm
@@ -9,8 +10,6 @@ from vendor.forms import VendorForm
 from vendor.models import Vendor
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-
-# Create your views here.
 
 class RegisterUserView(View):
     form_class = UserForm
@@ -41,12 +40,12 @@ class RegisterUserView(View):
             email = form.cleaned_data['email']
             phone_number = form.cleaned_data['phone_number']
             password = form.cleaned_data['password']
-            user = User.objects.create_user(first_name=first_name, last_name=last_name,password=password,
+            user = User.objects.create_user(first_name=first_name, last_name=last_name, password=password,
                                             username=username, email=email, phone_number=phone_number)
             user.role = User.CUSTOMER
             messages.success(request, 'user created successfully!')
             user.save()
-        else :
+        else:
             messages.error(request, "invalid form please check again")
         context = {
             "form": form
@@ -89,7 +88,8 @@ class RegisterVendorView(View):
             vendor = Vendor.objects.create(user=user, user_profile=vendor_profile, vendor_license=vendor_license,
                                            vendor_name=vendor_name)
             vendor.save()
-            messages.success(request, "your restaurant signed up successfully please waite till our admin register your account")
+            messages.success(request,
+                             "your restaurant signed up successfully please waite till our admin register your account")
             return redirect("registervendor")
         else:
             messages.error(request, "there is something wrong with your registration data")
@@ -134,15 +134,35 @@ def myaccount(request):
 class VendorDashboardView(LoginRequiredMixin, View):
     login_url = '/accounts/login/'
     redirect_field_name = 'login'
+
     def get(self, request):
-        return render(request, 'accounts/vendor_dashboard.html')
+        user = request.user
+        role = user.role
+        if role == 1:
+            return render(request, 'accounts/vendor_dashboard.html')
+        elif role == 2:
+            return redirect("customerdashboard")
+        elif role == None or user.is_admin:
+            return redirect("/admin")
+        else:
+            return redirect("home")
+
 
 
 class CustomerDashboardView(LoginRequiredMixin, View):
     login_url = '/accounts/login/'
     redirect_field_name = 'login'
-    def get(self, request):
-        return render(request, 'accounts/customer_dashboard.html')
 
+    def get(self, request):
+        user = request.user
+        role = user.role
+        if role == 1:
+            return redirect("vendordashboard")
+        elif role == 2:
+            return render(request, 'accounts/customer_dashboard.html')
+        elif role == None or user.is_admin:
+            return redirect("/admin")
+        else:
+            return redirect("home")
 
 
