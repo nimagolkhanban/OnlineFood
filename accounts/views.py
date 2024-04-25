@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
@@ -9,7 +10,16 @@ from accounts.utils import detectuser
 from vendor.forms import VendorForm
 from vendor.models import Vendor
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import ugettext_lazy
 
 class RegisterUserView(View):
     form_class = UserForm
@@ -43,8 +53,34 @@ class RegisterUserView(View):
             user = User.objects.create_user(first_name=first_name, last_name=last_name, password=password,
                                             username=username, email=email, phone_number=phone_number)
             user.role = User.CUSTOMER
-            messages.success(request, 'user created successfully!')
             user.save()
+
+            # send verification link by email
+            corrent_site = get_current_site(request)
+            html_message = render_to_string("accounts/emails/account_verifiation.html", {
+                                   'user': user,
+                                   'domain': corrent_site.domain,
+                                   'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                                   'token': default_token_generator.make_token(user),
+                               })
+            plain_message = strip_tags(html_message)
+            message = EmailMultiAlternatives(
+                subject=ugettext_lazy("Account Verification"),
+                body=plain_message,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[email],
+            )
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+
+            messages.success(request, 'user created successfully!')
+            send_mail(
+                subject="Test Email",
+                message="This is a test email from Django.",
+                from_email="ningoban@gmail.com",
+                recipient_list=["ningoban@gmail.com"],
+            )
+            return redirect('customerdashboard')
         else:
             messages.error(request, "invalid form please check again")
         context = {
@@ -82,6 +118,9 @@ class RegisterVendorView(View):
                                             username=username, email=email, phone_number=phone_number)
             user.role = User.RESTAURANT
             user.save()
+            # tip : send activate email
+            send_verification_email(request, user)
+
             vendor_name = ven_form.cleaned_data.get('vendor_name')
             vendor_license = ven_form.cleaned_data.get('vendor_license')
             vendor_profile = UserProfile.objects.get(user=user)
@@ -166,3 +205,5 @@ class CustomerDashboardView(LoginRequiredMixin, View):
             return redirect("home")
 
 
+def activate(request, uidb64, token):
+    return
