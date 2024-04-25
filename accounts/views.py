@@ -18,8 +18,21 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy
+
+
+def activate_account(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Your account activated')
+        return redirect("myaccount")
 
 class RegisterUserView(View):
     form_class = UserForm
@@ -74,12 +87,6 @@ class RegisterUserView(View):
             message.send()
 
             messages.success(request, 'user created successfully!')
-            send_mail(
-                subject="Test Email",
-                message="This is a test email from Django.",
-                from_email="ningoban@gmail.com",
-                recipient_list=["ningoban@gmail.com"],
-            )
             return redirect('customerdashboard')
         else:
             messages.error(request, "invalid form please check again")
