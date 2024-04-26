@@ -126,7 +126,23 @@ class RegisterVendorView(View):
             user.role = User.RESTAURANT
             user.save()
             # tip : send activate email
-            send_verification_email(request, user)
+            # send verification link by email
+            corrent_site = get_current_site(request)
+            html_message = render_to_string("accounts/emails/account_verifiation.html", {
+                'user': user,
+                'domain': corrent_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+            plain_message = strip_tags(html_message)
+            message = EmailMultiAlternatives(
+                subject=ugettext_lazy("Account Verification"),
+                body=plain_message,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[email],
+            )
+            message.attach_alternative(html_message, "text/html")
+            message.send()
 
             vendor_name = ven_form.cleaned_data.get('vendor_name')
             vendor_license = ven_form.cleaned_data.get('vendor_license')
@@ -136,7 +152,7 @@ class RegisterVendorView(View):
             vendor.save()
             messages.success(request,
                              "your restaurant signed up successfully please waite till our admin register your account")
-            return redirect("registervendor")
+            return redirect('vendordashboard')
         else:
             messages.error(request, "there is something wrong with your registration data")
             return redirect("registervendor")
@@ -212,5 +228,83 @@ class CustomerDashboardView(LoginRequiredMixin, View):
             return redirect("home")
 
 
-def activate(request, uidb64, token):
-    return
+# forgot password and reset password section
+class ForgotPasswordView(View):
+    def get(self, request):
+        return render(request, 'accounts/forgot_password.html')
+
+    def post(self, request):
+        email = request.POST['email']
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            # password reset email
+
+            corrent_site = get_current_site(request)
+            html_message = render_to_string("accounts/emails/forgot_password_email.html", {
+                'user': user,
+                'domain': corrent_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+            plain_message = strip_tags(html_message)
+            message = EmailMultiAlternatives(
+                subject=ugettext_lazy("Account Verification"),
+                body=plain_message,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[email],
+            )
+            message.attach_alternative(html_message, "text/html")
+            message.send()
+            return redirect("login")
+        else:
+            messages.error(request, "account does not exist")
+            return redirect("forgotpassword")
+
+class ResetPasswordValidateView(View):
+    def get(self, request, *args, **kwargs):
+        try :
+            uid = kwargs.get('uidb64')
+            uid = urlsafe_base64_decode(uid).decode()
+            token = kwargs.get('token')
+            user = User.objects.get(pk=uid)
+
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            messages.error(request, "your information is wrong")
+            return redirect("forgotpassword")
+        if user is not None and default_token_generator.check_token(user, token):
+            request.session['uid'] = uid
+            messages.info(request, "please reset your password")
+            return redirect("resetpassword")
+        else :
+            messages.error(request, "your information is wrong")
+            return redirect("forgotpassword")
+
+
+
+
+
+class ResetPasswordView(View):
+    def get(self, request):
+        uid = request.session.get('uid')
+        if uid:
+            return render(request, "accounts/reset_password.html")
+        else:
+            messages.error(request, "you cant access this page ")
+            return  redirect("forgotpassword")
+    def post(self, request):
+        uid = request.session.get('uid')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        if password == confirm_password:
+            user = User.objects.get(pk=uid)
+            user.set_password(password)
+            user.is_active = True
+            user.save()
+            messages.success(request, "your password has been updated")
+            del request.session['uid']
+            return redirect("login")
+        else:
+            messages.error(request, "password and confirmation are not same")
+            return redirect("resetpassword")
+
