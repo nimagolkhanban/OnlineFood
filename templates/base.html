@@ -52,8 +52,10 @@
 <body>
 	<!--Main Wrapper-->
 	<div class="wrapper">
-        
-		{% include "inc/header.html" %}
+        {% block header %}
+        	{% include "inc/header.html" %}
+        {% endblock %}
+		
 		<!-- Main Section Start -->
 		{% block content %}
 			
@@ -63,10 +65,12 @@
 		{% include "inc/footer.html" %}
 		<!-- Footer End -->
 	</div>
-	
-	<!-- Modal Popup End -->
-	<script src="{% static 'js/scripts.js' %}"></script>
+	{% block scripts_footer %}
+		<script src="{% static 'js/scripts.js' %}"></script>
 	<script src="{% static 'js/functions.js' %}"></script>
+	{% endblock %}
+	<!-- Modal Popup End -->
+	
 </body>
 
 </html>

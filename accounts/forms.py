@@ -1,6 +1,6 @@
 from django import forms
 
-from accounts.models import User
+from accounts.models import User, UserProfile
 
 
 class UserForm(forms.ModelForm):
@@ -19,3 +19,34 @@ class UserForm(forms.ModelForm):
         if password != confirm_password:
             raise forms.ValidationError("passwords don't match")
         return cleaned_data
+
+class UserProfileForm(forms.ModelForm):
+    profile_picture = forms.ImageField(
+        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}))
+    cover_photo = forms.ImageField(
+        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}))
+
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture', 'cover_photo', 'address_line_1', 'address_line_2', 'country', 'city', 'state',
+                  'pincode', 'latitude', 'longitude']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
