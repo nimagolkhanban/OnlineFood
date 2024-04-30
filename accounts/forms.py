@@ -21,11 +21,14 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError("passwords don't match")
         return cleaned_data
 
+
 class UserProfileForm(forms.ModelForm):
     profile_picture = forms.FileField(
         widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
     cover_photo = forms.FileField(
         widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
+    latitude = forms.CharField(widget=forms.TextInput(attrs={"readonly": 'readonly'}))
+    longitude = forms.CharField(widget=forms.TextInput(attrs={"readonly": 'readonly'}))
 
     class Meta:
         model = UserProfile

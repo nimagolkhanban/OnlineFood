@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 
@@ -8,7 +9,9 @@ from vendor.forms import VendorForm
 from vendor.models import Vendor
 
 
-class RestaurantProfileView(View):
+class RestaurantProfileView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
     profile_form = UserProfileForm
     vendor_form = VendorForm
 
