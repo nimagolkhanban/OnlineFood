@@ -74,6 +74,7 @@
     {% block header %}
     	{% include "vendor_inc/vendor_header.html" %}
 		<!-- Header End -->
+		<!-- Header End -->
     {% endblock %}
 
 		<!-- Main Section Start -->
@@ -143,10 +144,14 @@
 																		{{ profile_form.profile_picture }}
 {#																		<a href="#" class="">Upload Logo</a>#}
 																	</div>
+                                                                     <label class="text-danger">{{ profile_form.profile_picture.errors }}</label>
 																	<span>Update your avatar manually, If the not set the default Gravatar will be the same as your login email/user account. Max Upload Size: 1MB,</span>
 																</div>
+
 															</div>
+
 														</div>
+
                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 															<div class="restaurant-info">
 																<div class="img-holder">
@@ -171,10 +176,13 @@
 																		{{ profile_form.cover_photo }}
 {#																		<a href="#" class="upload-btn foodbakery-dev-featured-upload-btn">Upload Logo</a>#}
 																	</div>
+                                                                    <label class="text-danger" >{{ profile_form.cover_photo.errors }}</label>
 																	<span>Update your avatar manually, If the not set the default Gravatar will be the same as your login email/user account. Max Upload Size: 1MB,</span>
 																</div>
 															</div>
+
 														</div>
+
                                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 															<div class="restaurant-info">
 																<div class="img-holder">
@@ -199,6 +207,7 @@
                                                                         {{vendor_form.vendor_license}}
 {#																		<a href="#" class="upload-btn foodbakery-dev-featured-upload-btn">Upload Logo</a>#}
 																	</div>
+                                                                    <label class="text-danger">{{ vendor_form.vendor_license.errors }}</label>
 																	<span>Update your avatar manually, If the not set the default Gravatar will be the same as your login email/user account. Max Upload Size: 1MB,</span>
 																</div>
 															</div>
@@ -281,6 +290,7 @@
 				</div>
 			</div>
 		</div>
+
         {% endblock %}
 		<!-- Main Section End -->
 		<!-- Footer Start -->

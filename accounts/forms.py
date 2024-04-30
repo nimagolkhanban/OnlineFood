@@ -1,4 +1,5 @@
 from django import forms
+from .validators import allow_image_only
 
 from accounts.models import User, UserProfile
 
@@ -21,16 +22,15 @@ class UserForm(forms.ModelForm):
         return cleaned_data
 
 class UserProfileForm(forms.ModelForm):
-    profile_picture = forms.ImageField(
-        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}))
-    cover_photo = forms.ImageField(
-        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}))
+    profile_picture = forms.FileField(
+        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
+    cover_photo = forms.FileField(
+        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
 
     class Meta:
         model = UserProfile
         fields = ['profile_picture', 'cover_photo', 'address_line_1', 'address_line_2', 'country', 'city', 'state',
                   'pincode', 'latitude', 'longitude']
-
 
 
 

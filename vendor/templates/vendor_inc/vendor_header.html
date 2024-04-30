@@ -155,7 +155,13 @@
 										<li class="user-dashboard-menu-children">
 											<a href="javascript:void(0);" class="">
 												<figure class="profile-image">
-													<img src="{% static 'extra-images/listing-logo18.png' %}" alt=""> </figure>
+													<img src="
+													{% if vendor.user_profile.profile_picture %}
+                                                    {{vendor.user_profile.profile_picture.url}}
+                                                    {% else %}
+                                                    #
+                                                    {% endif %}
+                                                    " alt=""> </figure>
 												Restaurant Demo
 											</a>
 											<ul>
