@@ -23,6 +23,7 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    address = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'start typing..', 'required': 'required'}))
     profile_picture = forms.FileField(
         widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
     cover_photo = forms.FileField(
@@ -32,7 +33,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['profile_picture', 'cover_photo', 'address_line_1', 'address_line_2', 'country', 'city', 'state',
+        fields = ['profile_picture', 'cover_photo', 'address', 'country', 'city', 'state',
                   'pincode', 'latitude', 'longitude']
 
 
