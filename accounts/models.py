@@ -97,6 +97,18 @@ class User(AbstractBaseUser):
 
 
 class UserProfile(models.Model):
+    ZONE_CHOICES = (
+         ('Z1', 'Zone 1'),
+         ('Z2', 'Zone 2'),
+         ('Z3', 'Zone 3'),
+         ('Z4', 'Zone 4'),
+         ('Z5', 'Zone 5'),
+         ('Z6', 'Zone 6'),
+         ('Z7', 'Zone 7'),
+         ('Z8', 'Zone 8'),
+         ('Z9', 'Zone 9'),
+         ('Z10', 'Zone 10'))
+
     user = OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='users/profile_pictures', blank=True, null=True)
     cover_photo = models.ImageField(upload_to='users/cover_photos', blank=True, null=True)
@@ -105,8 +117,7 @@ class UserProfile(models.Model):
     state = models.CharField(max_length=50, blank=True, null=True)
     city = models.CharField(max_length=50, blank=True, null=True)
     pincode = models.CharField(max_length=6, blank=True, null=True)
-    longitude = models.CharField(max_length=20, blank=True, null=True)
-    latitude = models.CharField(max_length=20, blank=True, null=True)
+    zone = models.CharField(max_length=10, choices=ZONE_CHOICES, blank=True, null=True, default='Z1')
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
