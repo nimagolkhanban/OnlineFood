@@ -23,18 +23,28 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    ZONE_CHOICES = (
+        ('Z1', 'Zone 1'),
+        ('Z2', 'Zone 2'),
+        ('Z3', 'Zone 3'),
+        ('Z4', 'Zone 4'),
+        ('Z5', 'Zone 5'),
+        ('Z6', 'Zone 6'),
+        ('Z7', 'Zone 7'),
+        ('Z8', 'Zone 8'),
+        ('Z9', 'Zone 9'),
+        ('Z10', 'Zone 10'))
     address = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'start typing..', 'required': 'required'}))
     profile_picture = forms.FileField(
         widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
     cover_photo = forms.FileField(
         widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
-    latitude = forms.CharField(widget=forms.TextInput(attrs={"readonly": 'readonly'}))
-    longitude = forms.CharField(widget=forms.TextInput(attrs={"readonly": 'readonly'}))
+    zone = forms.ChoiceField(choices=ZONE_CHOICES, label="", initial='', widget=forms.Select(attrs={"class":"multiple chosen-select"}), required=True)
 
     class Meta:
         model = UserProfile
         fields = ['profile_picture', 'cover_photo', 'address', 'country', 'city', 'state',
-                  'pincode', 'latitude', 'longitude']
+                  'pincode', 'zone']
 
 
 

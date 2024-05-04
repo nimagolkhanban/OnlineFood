@@ -21,13 +21,12 @@ class RestaurantProfileView(LoginRequiredMixin, View):
         # tip : instance part will complete the existing data that user fill in registration form
         profile_form = self.profile_form(instance=profile)
         vendor_form = self.vendor_form(instance=vendor)
-
+        zone = UserProfile.objects.filter()
         context = {
             "profile_form": profile_form,
             "vendor_form": vendor_form,
             'current_profile': profile,
             'current_vendor': vendor,
-
         }
         return render(request, "vendor/vendor_profile.html", context)
 
@@ -43,13 +42,18 @@ class RestaurantProfileView(LoginRequiredMixin, View):
             'current_vendor': vendor,
 
         }
+
+        zone = request.POST.get('zone')
+        profile.zone = zone
+        profile.save()
+
         if profile_form.is_valid() and vendor_form.is_valid():
             profile_form.save()
             vendor_form.save()
             messages.success(request, 'Your profile has been updated')
+
             return redirect("restaurant_profile")
-        else :
+        else:
             messages.error(request, "there is something wrong in your information")
-            print(vendor_form.errors)
-            print(profile_form.errors)
+
             return render(request, "vendor/vendor_profile.html", context)
