@@ -5,8 +5,14 @@ from django.views import View
 
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
+from menu.models import Category, FoodItem
 from vendor.forms import VendorForm
 from vendor.models import Vendor
+
+
+def get_vendor(request):
+    vendor = Vendor.objects.get(user=request.user)
+    return vendor
 
 
 class RestaurantProfileView(LoginRequiredMixin, View):
@@ -57,3 +63,46 @@ class RestaurantProfileView(LoginRequiredMixin, View):
             messages.error(request, "there is something wrong in your information")
 
             return render(request, "vendor/vendor_profile.html", context)
+
+
+class MenuBuilderView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request):
+        vendor = get_vendor(request)
+        categories = Category.objects.filter(vendor=vendor)
+        context = {
+            'categories': categories,
+        }
+        return render(request, 'vendor/restaurant-menu-builder.html', context)
+
+
+class FoodItemsByCategoryView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request, pk=None):
+        vendor = get_vendor(request)
+        category = get_object_or_404(Category, pk=pk)
+        food_items = FoodItem.objects.filter(vendor=vendor, category=category)
+        context = {
+            "fooditems": food_items,
+            'category': category,
+        }
+        return render(request, 'vendor/food_iteme_category.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
