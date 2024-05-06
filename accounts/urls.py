@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.myaccount),
+    path('vendor/', include("vendor.urls")),
     # register and activate account
     path('registeruser/', views.RegisterUserView.as_view(), name='registeruser'),
     path('registervendor/', views.RegisterVendorView.as_view(), name='registervendor'),
@@ -20,7 +21,7 @@ urlpatterns = [
     path('resetpassword_validate/<uidb64>/<token>/', views.ResetPasswordValidateView.as_view(), name='resetpasswordvalidate'),
     path('resetpassword/', views.ResetPasswordView.as_view(), name='resetpassword'),
     # vendor link
-    path('vendor/', include("vendor.urls")),
+
 
 ]
 

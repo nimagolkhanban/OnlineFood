@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.defaultfilters import slugify
 from django.views import View
 
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
+from menu.forms import CategoryForm
 from menu.models import Category, FoodItem
 from vendor.forms import VendorForm
 from vendor.models import Vendor
@@ -70,7 +72,7 @@ class MenuBuilderView(LoginRequiredMixin, View):
     redirect_field_name = 'login'
     def get(self, request):
         vendor = get_vendor(request)
-        categories = Category.objects.filter(vendor=vendor)
+        categories = Category.objects.filter(vendor=vendor).order_by('created_at')
         context = {
             'categories': categories,
         }
@@ -91,9 +93,87 @@ class FoodItemsByCategoryView(LoginRequiredMixin, View):
         return render(request, 'vendor/food_iteme_category.html', context)
 
 
+class AddCategoryView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request):
+        form = CategoryForm()
+        context = {
+            'form': form
+        }
+        return render(request, 'vendor/add_category.html', context)
+
+    def post(self, request):
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            # tip : look in the next line we don't use the category variable because we need to take the data out of
+            # the form that user sends
+            category_name = form.cleaned_data["category_name"]
+            # tip : when we use the commit=false we create an instance of the model, but we don't save it inside the db,
+            # so we can access the model field even if it's not in the form field of that model
+            category = form.save(commit=False)
+            category.vendor = get_vendor(request)
+            category.slug = slugify(category_name)
+            form.save()
+            messages.success(request, 'Category added successfully!')
+            return redirect('menu-builder')
+        else:
+
+            messages.error(request, 'there is something wrong with your information')
+            context = {
+                 'form': form
+            }
+            return render(request, 'vendor/add_category.html', context)
 
 
+class EditCategoryView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
 
+    def get(self, request, pk):
+        current_category = get_object_or_404(Category, pk=pk)
+        form = CategoryForm(instance=current_category)
+        context = {
+            'form': form,
+            'category': current_category,
+        }
+        return render(request, 'vendor/edit_category.html', context)
+
+    def post(self, request, pk):
+        current_category = get_object_or_404(Category, pk=pk)
+        form = CategoryForm(request.POST, instance=current_category)
+        if form.is_valid():
+            # tip : look in the next line we don't use the category variable because we need to take the data out of
+            # the form that user sends
+            category_name = form.cleaned_data["category_name"]
+            # tip : when we use the commit=false we create an instance of the model, but we don't save it inside the db,
+            # so we can access the model field even if it's not in the form field of that model
+            category = form.save(commit=False)
+            category.vendor = get_vendor(request)
+            category.slug = slugify(category_name)
+            form.save()
+            messages.success(request, 'Category updated successfully!')
+            return redirect('menu-builder')
+        else:
+
+            messages.error(request, 'there is something wrong with your information')
+            context = {
+                'form': form,
+                'category': current_category,
+            }
+            return render(request, 'vendor/edit_category.html', context)
+
+
+class DeleteCategoryView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request, pk):
+        current_category = get_object_or_404(Category, pk=pk)
+        current_category.delete()
+        messages.success(request, 'category deleted successfully!')
+        return redirect('menu-builder')
 
 
 
