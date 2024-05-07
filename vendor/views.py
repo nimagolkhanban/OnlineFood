@@ -3,10 +3,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.views import View
+from django.views.generic import UpdateView
 
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
-from menu.forms import CategoryForm
+from menu.forms import CategoryForm, FoodForm
 from menu.models import Category, FoodItem
 from vendor.forms import VendorForm
 from vendor.models import Vendor
@@ -85,7 +86,7 @@ class FoodItemsByCategoryView(LoginRequiredMixin, View):
     def get(self, request, pk=None):
         vendor = get_vendor(request)
         category = get_object_or_404(Category, pk=pk)
-        food_items = FoodItem.objects.filter(vendor=vendor, category=category)
+        food_items = FoodItem.objects.filter(vendor=vendor, category=category).order_by('created_at')
         context = {
             "fooditems": food_items,
             'category': category,
@@ -174,6 +175,91 @@ class DeleteCategoryView(LoginRequiredMixin, View):
         current_category.delete()
         messages.success(request, 'category deleted successfully!')
         return redirect('menu-builder')
+
+class AddFoodView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request, pk):
+        form = FoodForm()
+        category = get_object_or_404(Category, pk=pk)
+        context = {
+            'form': form,
+            'category': category,
+
+        }
+        return render(request, 'vendor/add_food.html', context)
+
+    def post(self, request, pk):
+        form = FoodForm(request.POST, request.FILES)
+        category = get_object_or_404(Category, pk=pk)
+        if form.is_valid():
+            food_name = form.cleaned_data['food_title']
+            food = form.save(commit=False)
+            food.vendor = get_vendor(request)
+            food.category = category
+            food.slug = slugify(food_name)
+            food.save()
+            context = {
+                'form': form,
+                'category': category
+            }
+            return redirect('food-items-by-category', category.pk)
+        else:
+            messages.error(request, 'there is something wrong with your information')
+            context = {
+                'form': form,
+                'category': category
+            }
+            return render(request, 'vendor/add_food.html', context)
+
+
+class EditFoodView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request, pk):
+        current_food = get_object_or_404(FoodItem, pk=pk)
+        form = FoodForm(instance=current_food)
+        context = {
+            'form': form,
+            'food': current_food
+
+        }
+        return render(request, 'vendor/edit_food.html', context)
+
+    def post(self, request, pk):
+        current_food = get_object_or_404(FoodItem, pk=pk)
+        category = Category.objects.get(pk=current_food.category.pk)
+        form = FoodForm(request.POST, request.FILES, instance=current_food)
+        if form.is_valid():
+            food = form.save(commit=False)
+            food.vendor = get_vendor(request)
+            food.category = category
+            food.slug = slugify(form.cleaned_data['food_title'])
+            food.save()
+            messages.success(request, 'food edited')
+            return redirect('food-items-by-category', pk=category.pk)
+        else:
+            messages.error(request, 'invalid information')
+            context= {
+                'form': form,
+                'food': current_food,
+            }
+            return render(request, "vendor/edit_food.html", context)
+
+
+class DeleteFoodView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request, pk):
+        current_food = get_object_or_404(FoodItem, pk=pk)
+        current_food.delete()
+        category = Category.objects.get(pk=current_food.category.pk)
+        messages.success(request, 'food deleted successfully')
+        return redirect('food-items-by-category', pk=category.pk)
+
 
 
 

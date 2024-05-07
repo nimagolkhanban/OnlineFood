@@ -82,7 +82,11 @@
 
 		<!-- Main Section Start -->
         {% block content %}
-        {% include "inc/alerts.html" %}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    {% include "inc/alerts.html" %}
+                </div>
+            </div>
 
 		<div class="main-section">
 			{% include "vendor_inc/vendor_top_baner.html" %}
@@ -95,47 +99,58 @@
 								<div class="user-holder">
 									<h4 class="text-uppercase">build your menu</h4>
                                     <hr>
-                                    <h6>adding new <span class="text-uppercase text-info">{{ category }}</span></h6>
-                                     <a href="{% url 'add-food' category.pk %}" class="btn btn-success float-right m-1" style="float: right; width: 120px; height: 30px; font-size: 15px"> <i class="fa fa-plus" aria-hidden="true"></i> add food</a>
-
+                                    <h6>add new food</h6>
+                                    <a href="{% url 'menu-builder' %}" class="btn btn-danger float-right m-1" style="float: right; width: 200px; height: 30px; font-size: 15px; color: #ffffff"> <i class="fa fa-backward" aria-hidden="true"></i>&nbsp;&nbsp;go back to category list</a>
                                     <br>
                                     <br>
                                     <br>
-                                    {% if fooditems %}
-                                	    <table class="table table-hover ">
-                                            <tbody>
-                                            {% for food in fooditems %}
-                                            	<tr>
-                                                    <td style="text-align: center; vertical-align: middle">{{ forloop.counter }}</td>
-                                                    <td style="text-align: center; vertical-align: middle"><img src="{{ food.image.url }}" alt="food image" width="60" ></td>
-                                                    <td style="text-align: center; vertical-align: middle">
-                                                            <p style="font-weight: bold" class="mb-0 font-weight-bold">
-                                                                {{ food }}
-                                                            </p>
-                                                            <small class="text-muted">{{ food.description }}</small>
-                                                    </td>
-                                                    <td style="text-align: center; vertical-align: middle">
-                                                        {% if food.available %}
-                                                        	<span style="background-color: #3ba423 " class="badge badge-success">available</span>
-                                                            {% else %}
-                                                            <span style="background-color: #940d0d" class="badge badge-danger">unavailable</span>
-                                                        {% endif %}
-
-                                                    </td>
-                                                    <td style="text-align: center; vertical-align: middle"><a
-                                                            href="{% url 'edit-food' food.id %}"><i class="fa fa-pencil text-info" aria-hidden="true"></i></a></td>
-                                                    <td style="text-align: center; vertical-align: middle"><a
-                                                            href="{% url 'delete-food' food.id %}"><i class="fa fa-trash text-danger" aria-hidden="true"></i></a></td>
-                                                </tr>
-
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
+                                    <form action="{% url 'add-food' category.pk %}" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="form-fields-set">
+                                            <div class="row">
+                                                <div class="col-lg12 col-md-12 col-sm-12">
+                                                    <div class="field-holder">
+                                                    <label>food name</label>
+                                                    {{ form.food_title }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                                    <div class="field-holder">
+                                                    <label>food description</label>
+                                                    {{ form.description }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-12 col-sm-12">
+                                                    <div class="field-holder">
+                                                    <label>food price</label>
+                                                    {{ form.price }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-12 col-sm-12">
+                                                    <div class="field-holder">
+                                                    <label>is this food available</label>
+                                                    {{ form.available }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-12 col-sm-12">
+                                                    <div class="field-holder">
+                                                    <label>food image</label>
+                                                    {{ form.image }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% for field in form %}
+                                        	{% if field.errors %}
+                                        		{% for error in field.errors %}
+                                        			<li style="color: red">{{ error }}</li>
+                                        		{% endfor %}
+                                        	{% endif %}
+                                        {% endfor %}
+                                        <br>
+                                        <button type="submit" class="btn btn-info" style=" width: 100px; height: 30px; font-size: 15px; color: #ffffff"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;create</button>
                                         <br><br>
-                                        {% else %}
-
-                                        <p class="text-uppercase"style="font-weight: bold">you do not add any food for this category !!</p>
-                                    {% endif %}
+                                    </form>
 
 								</div>
 							</div>
