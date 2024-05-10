@@ -1,5 +1,7 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
+
+from vendor.models import Vendor
 from .models import User, UserProfile
 
 
@@ -19,3 +21,5 @@ def post_save_create_profile_receiver(sender, instance, created, **kwargs):
 @receiver(pre_save, sender=User)
 def pre_save_profile_receiver(sender, instance, *args, **kwargs):
     print("a userprofile has been saved")
+
+

@@ -3,6 +3,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
+from django.template.defaultfilters import slugify
 from django.views import View
 from accounts.forms import UserForm
 from accounts.models import User, UserProfile
@@ -29,10 +30,22 @@ def activate_account(request, uidb64, token):
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
     if user is not None and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-        messages.success(request, 'Your account activated')
-        return redirect("myaccount")
+        try:
+            vendor = Vendor.objects.get(user=user)
+            if vendor:
+                vendor.is_approved = True
+                vendor.save()
+                user.is_active = True
+                user.save()
+                messages.success(request, 'Your account activated')
+                return redirect("myaccount")
+        except:
+            user.is_active = True
+            user.save()
+            messages.success(request, 'Your account activated')
+            return redirect("myaccount")
+
+
 
 class RegisterUserView(View):
     form_class = UserForm
@@ -147,8 +160,9 @@ class RegisterVendorView(View):
             vendor_name = ven_form.cleaned_data.get('vendor_name')
             vendor_license = ven_form.cleaned_data.get('vendor_license')
             vendor_profile = UserProfile.objects.get(user=user)
+            vendor_slug = slugify(vendor_name+'-'+str(user.id))
             vendor = Vendor.objects.create(user=user, user_profile=vendor_profile, vendor_license=vendor_license,
-                                           vendor_name=vendor_name)
+                                           vendor_name=vendor_name, vendor_slug=vendor_slug)
             vendor.save()
             messages.success(request,
                              "your restaurant signed up successfully please waite till our admin register your account")
