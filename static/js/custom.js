@@ -5,17 +5,25 @@ $(document).ready(function(){
         e.preventDefault();
         food_id = $(this).attr('data-id');
         url = $(this).attr('data-url');
+
         $.ajax({
             typ: 'GET',
             url: url,
             success: function(response){
-                console.log(response.cart_counter['cart_count'])
-                 if(response.status == 'Failed'){
-                    console.log(response)
+                console.log(response)
+                 if(response.status == 'login_required'){
+                    swal(response.message, '','info').then(function(){
+                        window.location = '/accounts/login/';
+                    })
                 }
+                 if(response.status == 'Failed'){
+                    swal(response.message, '','error')
+
+                }
+
                 else{
-                   $('#cart_counter').html(response.cart_counter['cart_count']);
-                $('#qty-'+food_id).html(response.qty);
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    $('#qty-'+food_id).html(response.qty);
             }
             }
         })
@@ -37,15 +45,18 @@ $(document).ready(function(){
             typ: 'GET',
             url: url,
             success: function(response){
-                console.log(response.cart_counter['cart_count'])
-                if(response.status == 'Failed'){
-                    console.log(response)
+                console.log(response)
+                if(response.status == 'login_required'){
+                    swal(response.message, '','info').then(function(){
+                        window.location = '/accounts/login/';
+                    })
+                }else if(response.status == 'Failed'){
+                    swal(response.message, '','error')
+                } else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    $('#qty-'+food_id).html(response.qty);
                 }
-                else{
-                   $('#cart_counter').html(response.cart_counter['cart_count']);
-                $('#qty-'+food_id).html(response.qty);
             }
-                }
         })
     })
 });
