@@ -49,9 +49,14 @@
 		<!-- Themes / plugin Link End-->
         {% endblock %}
 		{% block header_scripts %}
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/fitvids/1.2.0/jquery.fitvids.min.js"></script>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/3.3.2/masonry.pkgd.js"></script>
+{#		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>#}
 		<script src="{% static 'js/modernizr.js' %}"></script>
 		<script src="{% static 'js/bootstrap.js' %}"></script>
+            <script src="{% static 'js/custom.js' %}"></script>
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
@@ -88,7 +93,9 @@
             {% endblock %}
 			{% block content %}
 				<div class="main-section">
-				<div class="page-section restaurant-detail-image-section" style=" background: url(assets/extra-images/cover-photo01.jpg) no-repeat scroll 0 0 / cover;">
+				<div class="page-section restaurant-detail-image-section" style=" background: url({% if vendor.user_profile.cover_photo %}
+                        {{ vendor.user_profile.cover_photo.url }}{% else %}{% static 'extra-images/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg' %}
+                         {% endif %}) no-repeat scroll 0 0 / cover;">
 					<!-- Container Start -->
 					<div class="container">
 						<!-- Row Start -->
@@ -128,7 +135,7 @@
 				<div class="page-section">
 					<div class="container">
 						<div class="row">
-							<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 sticky-sidebar">
+							<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 sticky-sidebar">
 								<div class="filter-toggle">
 									<span class="filter-toggle-text">Categories By</span><i class="icon-chevron-down"></i>
 								</div>
@@ -143,7 +150,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
+							<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 								<div class="tabs-holder horizontal">
 									<ul class="stickynav-tabs nav nav-tabs">
 										<li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Menu</a></li>
@@ -179,13 +186,18 @@
                                                                 </div>
                                                                 <div class="price-holder">
                                                                     <span class="price">£{{ fooditem.price }}</span>
-                                                                    <a href="#" class="restaurant-add-menu-btn"><i class="icon-plus4 text-color"></i></a>
-                                                                    <span id="add-menu-loader-10"></span>
+                                                                    <a style="margin-right:20px" href="#" data-id="{{ fooditem.id }}" data-url="{% url 'decrease-cart' fooditem.id %}" class="decrease_cart" ><i class="icon-minus text-color"></i></a>
+                                                                    <label id="qty-{{ fooditem.id }}">0</label>
+                                                                    <a href="#" data-id="{{ fooditem.id }}" data-url="{% url 'add-to-cart' fooditem.id %}" class="add_to_cart"><i class="icon-plus4 text-color"></i></a>
+
                                                                 </div>
                                                             </li>
 
                                                         {% endfor %}
                                                         </ul>
+                                                    {% endfor %}
+                                                    {% for item in cart_item %}
+                                                    	<span id="qty-{{ item.fooditem.id }}" class="item_qty" data-qty="{{ item.quantity }}">{{ item.quantity }}</span>
                                                     {% endfor %}
                                                     
 
@@ -227,7 +239,7 @@
 		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
 		<script src="{% static 'js/functions-plugin.js' %}"></script>
 		<script src="{% static 'js/functions-plugin.js' %}"></script>
-	<script src="{% static 'js/functions.js' %}"></script>
+	    <script src="{% static 'js/functions.js' %}"></script>
 	</body>
 
-</html>
+
