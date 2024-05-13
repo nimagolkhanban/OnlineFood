@@ -126,6 +126,7 @@
                                                                 <div class="text-holder">
                                                                     <h6>{{ item.fooditem.food_title}}</h6>
                                                                     <span>{{ item.fooditem.description }}</span>
+                                                                    <a style="background-color: #9d9d44; text-decoration:none " href="{% url 'vendor-detail' item.fooditem.vendor.vendor_slug %}" class="badge">{{ item.fooditem.vendor }}</a>
                                                                 </div>
                                                                 <div class="price-holder">
                                                                     <span class="price">£{{ item.fooditem.price }}</span>
@@ -173,24 +174,24 @@
                                                 <div>
                                                     <ul>
                                                         <li style="list-style-type: none">
-                                                            Subtitle
+                                                            Subtotal
                                                             <span class="price float-right" style="float: right">
                                                                 <span class="currency">$</span>
-                                                                <span id="subtotal">0</span>
+                                                                <span id="subtotal">{{ subtotal }}</span>
                                                             </span>
                                                         </li>
                                                          <li style="list-style-type: none">
                                                             Tax
                                                              <span class="price float-right" style="float: right">
                                                                 <span class="currency">$</span>
-                                                                <span id="tax">0</span>
+                                                                <span id="tax">{{ tax }}</span>
                                                             </span>
                                                         </li>
                                                          <li style="list-style-type: none; font-weight: 600">
                                                             TOTAL
                                                              <span class="price" style="float: right">
                                                                 <span class="currency">$</span>
-                                                                <span id="total">0</span>
+                                                                <span id="total">{{ grand_total }}</span>
                                                             </span>
                                                         </li>
 

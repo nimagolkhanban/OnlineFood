@@ -15,15 +15,18 @@ $(document).ready(function(){
                     swal(response.message, '','info').then(function(){
                         window.location = '/accounts/login/';
                     })
-                }
-                 if(response.status == 'Failed'){
+                }else if(response.status == 'Failed'){
                     swal(response.message, '','error')
 
-                }
-
-                else{
+                } else{
                     $('#cart_counter').html(response.cart_counter['cart_count']);
                     $('#qty-'+food_id).html(response.qty);
+                    // subtotal, tax and grand total
+                     applyCartAmounts(
+                         response.cart_amount['subtotal'],
+                         response.cart_amount['tax'],
+                         response.cart_amount['grand_total'],
+                     )
             }
             }
         })
@@ -58,6 +61,11 @@ $(document).ready(function(){
                 } else{
                     $('#cart_counter').html(response.cart_counter['cart_count']);
                     $('#qty-'+food_id).html(response.qty);
+                    applyCartAmounts(
+                         response.cart_amount['subtotal'],
+                         response.cart_amount['tax'],
+                         response.cart_amount['grand_total'],
+                     )
                     if (window.location.pathname == '/cart/'){
                         removeCartItem(response.qty, cart_id);
                         checkEmptyCart();
@@ -83,6 +91,11 @@ $(document).ready(function(){
                 } else{
                     $('#cart_counter').html(response.cart_counter['cart_count']);
                     swal(response.status, response.message, 'success')
+                    applyCartAmounts(
+                         response.cart_amount['subtotal'],
+                         response.cart_amount['tax'],
+                         response.cart_amount['grand_total'],
+                     )
                     removeCartItem(0, cart_id);
                     checkEmptyCart();
                 }
@@ -102,6 +115,16 @@ $(document).ready(function(){
         if (cart_counter == 0){
             document.getElementById("empty-cart").style.display = "block";
         }
+    }
+
+    // apply cart amounts
+    function applyCartAmounts(subtotal, tax, grand_total){
+        if(window.location.pathname == '/cart/'){
+            $('#subtotal').html(subtotal)
+            $('#tax').html(tax)
+            $('#total').html(grand_total)
+        }
+
     }
 
 });
