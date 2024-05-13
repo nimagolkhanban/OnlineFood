@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -93,8 +95,29 @@ def decrease_cart(request, food_id):
         return JsonResponse({'status': 'login_required', 'message': 'You are not logged in'})
 
 
+class CartView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request):
+        cart_items = Cart.objects.filter(user=request.user)
+        context = {'cart_items': cart_items}
+        return render(request, 'marketplace/cart.html', context)
 
 
+
+def delete_from_cart(request, cart_id):
+    if request.user.is_authenticated:
+        if request.is_ajax():
+            try:
+                cart_item = Cart.objects.get(user=request.user, id=cart_id)
+                if cart_item:
+                    cart_item.delete()
+                    return JsonResponse({'status': 'Success', 'message': 'item deleted', "cart_counter": get_cart_counter(request)})
+            except :
+                return JsonResponse({'status': 'Failed', 'message': 'cart item does not exist'})
+        else:
+            return JsonResponse({'status': 'Failed', 'message': 'invalid request'})
 
 
 
