@@ -1,16 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.views import View
 from django.views.generic import UpdateView
+from django.db import IntegrityError
 
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
 from menu.forms import CategoryForm, FoodForm
 from menu.models import Category, FoodItem
-from vendor.forms import VendorForm
-from vendor.models import Vendor
+from vendor.forms import VendorForm, OpeningHourForm
+from vendor.models import Vendor, OpeningHour
 
 
 def get_vendor(request):
@@ -261,10 +263,41 @@ class DeleteFoodView(LoginRequiredMixin, View):
         return redirect('food-items-by-category', pk=category.pk)
 
 
+class OpeningHourView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+
+    def get(self, request):
+        form = OpeningHourForm()
+        opening_hour = OpeningHour.objects.filter(vendor=get_vendor(request))
+        context ={
+            'opening_hour': opening_hour,
+            'form': form
+        }
+        return render(request, "vendor/opening_hour.html", context)
+
+    def post(self, request):
+        print(request.POST)
+        if 'Add' in request.POST:
+            form = OpeningHourForm(request.POST)
+            if form.is_valid():
+                valid_form = form.save(commit=False)
+                vendor = get_vendor(request)
+                valid_form.vendor = vendor
+                valid_form.save()
+                messages.success(request, 'open hour added successfully')
+                return redirect('opening-hour')
+            messages.error(request, 'form is not valid')
+            return redirect('opening-hour')
 
 
+class RemoveOpeningHourView(LoginRequiredMixin,View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
 
-
+    def get(self, request, pk):
+        OpeningHour.objects.get(pk=pk).delete()
+        return redirect('opening-hour')
 
 
 

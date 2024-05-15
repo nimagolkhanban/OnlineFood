@@ -10,7 +10,44 @@
 	<div class="main-section">
 			<!-- Home Pages Elements Strat -->
 			<!-- Main Search Start -->
-			{% include "inc/main_search.html" %}
+			<div class="page-section nopadding cs-nomargin" style="padding-top: 200px; padding-bottom: 150px; margin-bottom: 0px; background: url({% static 'extra-images/bg-image1.jpg' %}) no-repeat center / cover;">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+							<div class="element-title">
+								<h1 style="font-size: 40px; color: #505050; text-transform: uppercase; line-height: 50px; margin-bottom: 25px; text-align:center;">
+									We are in the business of food<br>our restaurants do</h1>
+								<p style="font-size: 18px; letter-spacing: 1px; color: #505050; text-align:center;">
+									Ridiculus sociosqu
+									cursus neque cursus curae ante scelerisque vehicula.</p>
+							</div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " style="margin: 0 auto; width: 80%;">
+							<div class="main-search fancy bg-holder" >
+								<form method="POST" action="{% url 'home' %}">
+                                    {% csrf_token %}
+									<div class="row" style="display: flex;
+  justify-content: center;
+  align-items: center;">
+										<div class="col-lg-10 col-md-10 col-sm-5 col-xs-12" >
+											<div class="field-holder">
+												{{ search_form.restaurant_name }}
+											</div>
+										</div>
+										
+										<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="">
+											<div class="field-holder">
+												<input type="submit" value="Search">
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+			</div>
 			<!-- Main Search End -->
 			
 			<!-- Top Restarurants Section Start -->

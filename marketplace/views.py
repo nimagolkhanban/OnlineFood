@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponse
@@ -8,7 +10,7 @@ from django.db.models import prefetch_related_objects
 from marketplace.context_processors import get_cart_counter, get_cart_amounts
 from marketplace.models import Cart
 from menu.models import Category, FoodItem
-from vendor.models import Vendor
+from vendor.models import Vendor, OpeningHour
 
 
 # Create your views here.
@@ -28,8 +30,14 @@ class MarketPlaceView(View):
 class VendorDetailView(View):
 
     def get(self, request, vendor_slug):
+
         vendor = Vendor.objects.get(vendor_slug=vendor_slug)
         categories = Category.objects.filter(vendor=vendor).prefetch_related('fooditems')
+        opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', 'from_hour')
+        # check current day opening hour
+        today_date = date.today()
+        today = today_date.isoweekday()
+        current_opening_hour = OpeningHour.objects.filter(vendor=vendor, day=today)
         if request.user.is_authenticated:
             cart_item = Cart.objects.filter(user=request.user)
         else:
@@ -38,7 +46,9 @@ class VendorDetailView(View):
         context = {
             'vendor': vendor,
             'categories': categories,
-            'cart_item': cart_item
+            'cart_item': cart_item,
+            'opening_hours': opening_hours,
+            'current_opening_hour': current_opening_hour,
         }
         return render(request, 'marketplace/vendor-detail.html', context)
 

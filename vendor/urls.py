@@ -16,4 +16,9 @@ urlpatterns = [
     path('menu-builder/food/edit/<int:pk>/', views.EditFoodView.as_view(), name='edit-food'),
     path('menu-builder/food/delete/<int:pk>/', views.DeleteFoodView.as_view(), name='delete-food'),
 
+    # opening hour multiple form handel in one url
+    path('opening-hour/', views.OpeningHourView.as_view(), name='opening-hour'),
+    path('opening-hour/remove/<int:pk>/', views.RemoveOpeningHourView.as_view(), name='remove-opening-hour')
+
+
 ]
