@@ -7,8 +7,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy
 
 from accounts.models import User, UserProfile
-from datetime import time
-
+from datetime import date, datetime, time
 # Create your models here.
 
 class Vendor(models.Model):
@@ -23,6 +22,23 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.vendor_name
+
+    def is_open(self):
+        today_date = date.today()
+        today = today_date.isoweekday()
+        current_opening_hour = OpeningHour.objects.filter(vendor=self, day=today)
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        is_open = None
+        for i in current_opening_hour:
+            start = str(datetime.strptime(i.from_hour, "%I:%M %p").time())
+            end = str(datetime.strptime(i.to_hour, "%I:%M %p").time())
+            if start < current_time < end:
+                is_open = True
+                break
+            else:
+                is_open = False
+        return is_open
 
     def save(self, *args, **kwargs):
         # tip : we use pk because pk is same in the instance itself and the update version of instance and we cant change it

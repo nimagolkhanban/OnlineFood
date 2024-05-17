@@ -34,21 +34,12 @@ class VendorDetailView(View):
         vendor = Vendor.objects.get(vendor_slug=vendor_slug)
         categories = Category.objects.filter(vendor=vendor).prefetch_related('fooditems')
         opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', 'from_hour')
+
         # check current day opening hour
         today_date = date.today()
         today = today_date.isoweekday()
         current_opening_hour = OpeningHour.objects.filter(vendor=vendor, day=today)
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-        is_open = None
-        for i in current_opening_hour:
-            start = str(datetime.strptime(i.from_hour, "%I:%M %p").time())
-            end = str(datetime.strptime(i.to_hour, "%I:%M %p").time())
-            if current_time > start and current_time < end:
-                is_open = True
-                break
-            else:
-                is_open = False
+
         if request.user.is_authenticated:
             cart_item = Cart.objects.filter(user=request.user)
         else:
@@ -60,7 +51,7 @@ class VendorDetailView(View):
             'cart_item': cart_item,
             'opening_hours': opening_hours,
             'current_opening_hour': current_opening_hour,
-            'is_open': is_open,
+
         }
         return render(request, 'marketplace/vendor-detail.html', context)
 

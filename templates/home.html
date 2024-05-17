@@ -34,7 +34,7 @@
 												{{ search_form.restaurant_name }}
 											</div>
 										</div>
-										
+
 										<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="">
 											<div class="field-holder">
 												<input type="submit" value="Search">
@@ -44,7 +44,7 @@
 								</form>
 							</div>
 						</div>
-						
+
 					</div>
 				</div>
 			</div>
@@ -108,9 +108,16 @@
                                                         {% endif %} 
                                                     </a>
                                                 </figure>
-												<span class="restaurant-status close">
-													<em class="bookmarkRibbon"></em>Close
-												</span>
+                                                {% if vendor.is_open %}
+                                                    <span class="restaurant-status open">
+                                                        <em class="bookmarkRibbon"></em>open
+                                                    </span>
+                                                    {% else %}
+                                                    <span class="restaurant-status close">
+                                                        <em class="bookmarkRibbon"></em>close
+                                                    </span>
+                                                {% endif %} 
+												
 											</div>
 											<div class="text-holder">
 												<div class="list-rating">

@@ -174,7 +174,7 @@
 										<div class="text-holder">
 
 											<div class="text">
-                                                <span class="restaurant-title">{{ vendor.vendor_name}}{% if not is_open %}
+                                                <span class="restaurant-title">{{ vendor.vendor_name}}{% if not vendor.is_open %}
                                                 	[closed at the moment]
                                                 {% endif %} </span>
 											<span style="color: #ffffff" class="restaurant-info">working zone : {{ vendor.user_profile.zone}}</span>
