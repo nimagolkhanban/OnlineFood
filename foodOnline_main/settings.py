@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'marketplace',
     'home',
     'customers',
+    'orders',
     # third packages
 
 ]
