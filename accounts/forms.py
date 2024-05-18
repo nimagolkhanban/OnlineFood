@@ -34,12 +34,12 @@ class UserProfileForm(forms.ModelForm):
         ('Z8', 'Zone 8'),
         ('Z9', 'Zone 9'),
         ('Z10', 'Zone 10'))
-    address = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'start typing..', 'required': 'required'}))
+    address = forms.CharField(widget=forms.TextInput(attrs={'required': 'required'}))
     profile_picture = forms.FileField(
         widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
     cover_photo = forms.FileField(
-        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), validators=[allow_image_only])
-    zone = forms.ChoiceField(choices=ZONE_CHOICES, label="", initial='', widget=forms.Select(attrs={"class":"multiple chosen-select"}), required=True)
+        widget=forms.FileInput(attrs={"class": 'upload-btn foodbakery-dev-featured-upload-btn'}), required=False, validators=[allow_image_only])
+    zone = forms.ChoiceField(choices=ZONE_CHOICES, label="zone", initial='', widget=forms.Select(attrs={"class":"multiple chosen-select"}), required=True)
 
     class Meta:
         model = UserProfile
@@ -47,7 +47,10 @@ class UserProfileForm(forms.ModelForm):
                   'pincode', 'zone']
 
 
-
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'phone_number']
 
 
 

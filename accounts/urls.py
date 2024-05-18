@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.myaccount),
     path('vendor/', include("vendor.urls")),
+    path('customer/', include('customers.urls')),
     # register and activate account
     path('registeruser/', views.RegisterUserView.as_view(), name='registeruser'),
     path('registervendor/', views.RegisterVendorView.as_view(), name='registervendor'),
@@ -14,7 +15,6 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view(), name='logout'),
     # dashboard redirectors
     path('myaccount/', views.myaccount, name='myaccount'),
-    path('customerdashboard/', views.CustomerDashboardView.as_view(), name='customerdashboard'),
     path('vendordashboard/', views.VendorDashboardView.as_view(), name='vendordashboard'),
     # forgot password
     path('forgotpassword/', views.ForgotPasswordView.as_view(), name='forgotpassword'),

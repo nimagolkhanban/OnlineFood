@@ -29,6 +29,7 @@ def get_cart_amounts(request):
     subtotal = Decimal('0.0')
     grand_total = Decimal('0.0')
     tax_rate = Decimal('0.10')
+    tax = 0
 
     def round_decimal(value):
         return value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
@@ -43,6 +44,6 @@ def get_cart_amounts(request):
 
         tax = round_decimal(tax)
         grand_total = round_decimal(grand_total)
-
+        return dict(subtotal=subtotal, tax=tax, grand_total=grand_total)
     return dict(subtotal=subtotal, tax=tax, grand_total=grand_total)
 
