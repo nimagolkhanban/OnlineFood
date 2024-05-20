@@ -206,14 +206,15 @@ class CheckOutView(LoginRequiredMixin, View):
                 order_food.save()
                 food.delete()
 
-            return redirect('customer-profile')
+            return redirect('order-complete', order_number=my_order.order_number)
         else:
             context = {
                 'form': form,
                 'cart_items': cart_items,
                 'cart_count': cart_counter,
             }
-            return render(request, 'marketplace/checkout.html',context)
+            messages.error(request, 'Something went wrong. Please try again.')
+            return render(request, 'marketplace/checkout.html', context)
 
 
 
