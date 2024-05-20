@@ -3,20 +3,13 @@ from accounts.models import User
 from menu.models import FoodItem
 
 
-class Payment(models.Model):
-    PAYMENT_METHOD = (
-        ('ZarinPal', 'ZarinPal'),
-
-    )
+class AccountBalance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    transaction_id = models.CharField(max_length=100)
-    payment_method = models.CharField(choices=PAYMENT_METHOD, max_length=100, default='ZarinPal')
-    amount = models.CharField(max_length=10)
-    status = models.CharField(max_length=100)
+    amount = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.transaction_id
+        return str(self.user)
 
 
 class Order(models.Model):
@@ -28,7 +21,6 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
     order_number = models.CharField(max_length=20)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -40,8 +32,7 @@ class Order(models.Model):
     city = models.CharField(max_length=50)
     pin_code = models.CharField(max_length=10)
     total = models.FloatField()
-    total_tax = models.FloatField()
-    payment_method = models.CharField(max_length=25)
+    tax = models.FloatField()
     status = models.CharField(max_length=15, choices=STATUS, default='New')
     is_ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -58,7 +49,6 @@ class Order(models.Model):
 
 class OrderedFood(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     fooditem = models.ForeignKey(FoodItem, on_delete=models.CASCADE)
     quantity = models.IntegerField()
@@ -68,4 +58,4 @@ class OrderedFood(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.fooditem.food_title
+        return self.fooditem.food_title + 'ordered by ' + str(self.user) + '  in  ' + str(self.created_at)

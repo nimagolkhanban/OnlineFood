@@ -1,5 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
-
+from orders.models import AccountBalance
 from .models import Cart
 from menu.models import FoodItem
 
@@ -47,3 +47,12 @@ def get_cart_amounts(request):
         return dict(subtotal=subtotal, tax=tax, grand_total=grand_total)
     return dict(subtotal=subtotal, tax=tax, grand_total=grand_total)
 
+def get_user_account_balance(request):
+    amount = 0
+    if request.user.is_authenticated:
+        try:
+            user_balance = AccountBalance.objects.get(user=request.user)
+            amount = user_balance.amount
+        except:
+            amount = 0
+    return {'amount': amount}

@@ -2,16 +2,21 @@ from datetime import date, datetime
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.db.models import prefetch_related_objects
+from unicodedata import decimal
 
+from accounts.models import UserProfile
 from marketplace.context_processors import get_cart_counter, get_cart_amounts
 from marketplace.models import Cart
 from menu.models import Category, FoodItem
+from orders.forms import OrderForm
+from orders.models import AccountBalance, OrderedFood
 from vendor.models import Vendor, OpeningHour
-
+from orders.utils import generate_order_number
 
 # Create your views here.
 
@@ -131,6 +136,88 @@ def delete_from_cart(request, cart_id):
                 return JsonResponse({'status': 'Failed', 'message': 'cart item does not exist'})
         else:
             return JsonResponse({'status': 'Failed', 'message': 'invalid request'})
+
+
+class CheckOutView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request):
+        cart_items = Cart.objects.filter(user=request.user).order_by('created')
+        cart_counter = cart_items.count()
+        if cart_counter == 0:
+            return redirect('marketplace')
+        user_profile = UserProfile.objects.get(user=request.user)
+        default_value = {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'phone': request.user.phone_number,
+            'email': request.user.email,
+            'address': user_profile.address,
+            'country': user_profile.country,
+            'city': user_profile.city,
+            'state': user_profile.state,
+            'pincode': user_profile.pincode,
+        }
+        # tip: th bellow code is for making the form prepopulated data from db
+        # we don't use instance because data is not in the one model actually initial is for adding some static default
+        form = OrderForm(initial=default_value)
+        context = {
+            'form': form,
+            'cart_items': cart_items,
+            'cart_count': cart_counter,
+        }
+        return render(request, 'marketplace/checkout.html', context)
+
+    def post(self, request):
+        cart_items = Cart.objects.filter(user=request.user).order_by('created')
+        cart_counter = cart_items.count()
+        form = OrderForm(request.POST)
+        order_tax = get_cart_amounts(request)['tax']
+        order_grand_total_price = get_cart_amounts(request)['grand_total']
+
+
+        account_balance = AccountBalance.objects.get(user=request.user)
+        if account_balance.amount >= order_grand_total_price:
+            account_balance.amount = account_balance.amount - float(order_grand_total_price)
+            account_balance.save()
+            print("done")
+
+
+
+        if form.is_valid():
+            my_order = form.save(commit=False)
+            my_order.user = request.user
+            my_order.tax = order_tax
+            my_order.total = order_grand_total_price
+            my_order.status = 'Completed'
+            my_order.is_ordered = True
+            my_order.save()
+            my_order.order_number = generate_order_number(my_order.pk)
+            my_order.save()
+            food_in_cart = Cart.objects.filter(user=request.user)
+            for food in food_in_cart:
+                order_food = OrderedFood()
+                order_food.order = my_order
+                order_food.user = request.user
+                order_food.fooditem = food.fooditem
+                order_food.quantity = food.quantity
+                order_food.price = food.fooditem.price
+                order_food.amount = food.fooditem.price * food.quantity
+                order_food.save()
+                food.delete()
+
+            return redirect('customer-profile')
+        else:
+            context = {
+                'form': form,
+                'cart_items': cart_items,
+                'cart_count': cart_counter,
+            }
+            return render(request, 'marketplace/checkout.html',context)
+
+
+
+
 
 
 

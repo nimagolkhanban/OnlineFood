@@ -16,6 +16,7 @@ urlpatterns = [
     # dashboard redirectors
     path('myaccount/', views.myaccount, name='myaccount'),
     path('vendordashboard/', views.VendorDashboardView.as_view(), name='vendordashboard'),
+    path('customerdashboard/', views.CustomerDashboardView.as_view(), name='customerdashboard'),
     # forgot password
     path('forgotpassword/', views.ForgotPasswordView.as_view(), name='forgotpassword'),
     path('resetpassword_validate/<uidb64>/<token>/', views.ResetPasswordValidateView.as_view(), name='resetpasswordvalidate'),

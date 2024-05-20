@@ -69,6 +69,11 @@
 						<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 							<div class="login-option">
                             {% if request.user.is_authenticated %}
+                                <a href="{% url 'cart' %}" style="margin-right: 12px; top: 2px; position:relative; border: #C33332 solid thin; padding: 9px 9px; border-radius: 10px">
+                                         <i class="fa fa-money text-danger" style="font-size: 20px"></i>
+                                <span class="badge badge-warning" style="border-radius:10px ;position: relative; background-color: #ab1526; height: 25px; bottom: 5px">{{ amount }}</span>
+                                    </a>
+                               
                             	<a href="{% url 'cart' %}">
                                     <a href="{% url 'cart' %}" style="margin-right: 12px; top: 2px; position:relative; border: #C33332 solid thin; padding: 9px 9px; border-radius: 10px">
                                         <i class="fa fa-shopping-cart text-danger" style="font-size: 20px"></i>
@@ -76,6 +81,7 @@
                                     </a>
                                     
                                 </a>
+                               
                             {% endif %}
                             <a class="btn btn-outline-danger" href="{% url 'marketplace' %}">MarketPlace</a>
                                 {% if user.is_authenticated %}

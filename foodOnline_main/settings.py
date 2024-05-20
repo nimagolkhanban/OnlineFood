@@ -79,6 +79,7 @@ TEMPLATES = [
                 'marketplace.context_processors.get_cart_counter',
                 'marketplace.context_processors.get_cart_amounts',
                 'customers.context_processors.get_current_customer',
+                'marketplace.context_processors.get_user_account_balance',
             ],
         },
     },
