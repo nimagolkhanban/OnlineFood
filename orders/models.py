@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from menu.models import FoodItem
+from vendor.models import Vendor
 
 
 class AccountBalance(models.Model):
@@ -21,6 +22,7 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    vendor = models.ManyToManyField(Vendor, blank=True)
     order_number = models.CharField(max_length=20)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -33,6 +35,7 @@ class Order(models.Model):
     pin_code = models.CharField(max_length=10)
     total = models.FloatField()
     tax = models.FloatField()
+    total_data = models.JSONField(blank=True, null=True)
     status = models.CharField(max_length=15, choices=STATUS, default='New')
     is_ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
