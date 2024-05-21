@@ -175,6 +175,11 @@ class CheckOutView(LoginRequiredMixin, View):
         order_tax = get_cart_amounts(request)['tax']
         order_grand_total_price = get_cart_amounts(request)['grand_total']
 
+        # tip: add the vendors in the order m2m relationship
+        vendors_id = []
+        for item in cart_items:
+            if item.fooditem.vendor.id not in vendors_id:
+                vendors_id.append(item.fooditem.vendor.id)
 
         account_balance = AccountBalance.objects.get(user=request.user)
         if account_balance.amount >= order_grand_total_price:
@@ -192,6 +197,9 @@ class CheckOutView(LoginRequiredMixin, View):
             my_order.status = 'Completed'
             my_order.is_ordered = True
             my_order.save()
+            # tip: we should use * and add to add the data in the m2m model, and we should do this after save because
+            # order should have id to
+            my_order.vendors.add(*vendors_id)
             my_order.order_number = generate_order_number(my_order.pk)
             my_order.save()
             food_in_cart = Cart.objects.filter(user=request.user)

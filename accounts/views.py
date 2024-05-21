@@ -219,9 +219,11 @@ class VendorDashboardView(LoginRequiredMixin, View):
         # tip: the code bellow is really cool because with 'in' we search for the id of the vendor we have in the
         # vendors m2m tabel
         orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
+        recent_orders = orders[:5]
         context = {
             'orders': orders,
             'orders_count': orders.count(),
+            'recent_orders': recent_orders,
 
         }
         if role == 1:
