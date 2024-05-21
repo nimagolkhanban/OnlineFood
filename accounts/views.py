@@ -8,6 +8,7 @@ from django.views import View
 from accounts.forms import UserForm
 from accounts.models import User, UserProfile
 from accounts.utils import detectuser
+from orders.models import Order
 from vendor.forms import VendorForm
 from vendor.models import Vendor
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -232,10 +233,17 @@ class CustomerDashboardView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         role = user.role
+        orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+        recent_orders = orders[:5]
+        context = {
+            'orders': orders,
+            'orders_count': orders.count(),
+            'recent_orders': recent_orders,
+        }
         if role == 1:
             return redirect("vendordashboard")
         elif role == 2:
-            return render(request, 'accounts/customer_dashboard.html')
+            return render(request, 'accounts/customer_dashboard.html', context)
         elif role == None or user.is_admin:
             return redirect("/admin")
         else:
