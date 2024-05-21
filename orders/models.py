@@ -53,6 +53,8 @@ class Order(models.Model):
         return self.order_number
 
 
+
+
 class OrderedFood(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

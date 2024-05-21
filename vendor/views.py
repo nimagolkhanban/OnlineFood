@@ -11,6 +11,7 @@ from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
 from menu.forms import CategoryForm, FoodForm
 from menu.models import Category, FoodItem
+from orders.models import Order, OrderedFood
 from vendor.forms import VendorForm, OpeningHourForm
 from vendor.models import Vendor, OpeningHour
 
@@ -298,6 +299,33 @@ class RemoveOpeningHourView(LoginRequiredMixin,View):
     def get(self, request, pk):
         OpeningHour.objects.get(pk=pk).delete()
         return redirect('opening-hour')
+
+
+class VendorOrderDetailView(LoginRequiredMixin,View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request, order_number):
+        try:
+            order = Order.objects.get(order_number=order_number, is_ordered=True)
+            # tip: with giving the fooditem__vendor we look for fooditem that is in the specific order and also blog
+            # to the vendor that longed in the page and not all the fooditem because maybe user ordered some fod from 3
+            # restaurant
+            ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor=get_vendor(request))
+            subtotal = 0
+            for item in ordered_food:
+                subtotal += (item.quantity * item.price)
+                tax = 0.1 * subtotal
+                grand_total = subtotal + tax
+            context = {
+                'order': order,
+                'ordered_food': ordered_food,
+                'subtotal': subtotal,
+                'tax': tax,
+                'grand_total': grand_total,
+            }
+            return render(request, 'vendor/vendor_order_detail.html', context)
+        except:
+            return redirect('vendordashboard')
 
 
 

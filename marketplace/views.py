@@ -174,18 +174,35 @@ class CheckOutView(LoginRequiredMixin, View):
         form = OrderForm(request.POST)
         order_tax = get_cart_amounts(request)['tax']
         order_grand_total_price = get_cart_amounts(request)['grand_total']
-
+        total_data = {}
         # tip: add the vendors in the order m2m relationship
         vendors_id = []
         for item in cart_items:
             if item.fooditem.vendor.id not in vendors_id:
                 vendors_id.append(item.fooditem.vendor.id)
 
+        # tip: the code bellow is pretty complex output is like {9: Decimal('10.00'), 8: Decimal('50.00')}
+        # this is because we want to separate the total of each vendor in a single order
+        subtotal = 0
+        k = {}
+        for i in cart_items:
+            fooditem = FoodItem.objects.get(pk=i.fooditem.id, vendor__id__in=vendors_id)
+            v_id = fooditem.vendor.id
+            if v_id in k:
+                subtotal = k[v_id]
+                subtotal += str(fooditem.price * i.quantity)
+                k[v_id] = subtotal
+            else:
+                subtotal = str(fooditem.price * i.quantity)
+                k[v_id] = subtotal
+
+
+
         account_balance = AccountBalance.objects.get(user=request.user)
         if account_balance.amount >= order_grand_total_price:
             account_balance.amount = account_balance.amount - float(order_grand_total_price)
             account_balance.save()
-            print("done")
+
 
 
 
@@ -196,6 +213,7 @@ class CheckOutView(LoginRequiredMixin, View):
             my_order.total = order_grand_total_price
             my_order.status = 'Completed'
             my_order.is_ordered = True
+            my_order.total_data = k
             my_order.save()
             # tip: we should use * and add to add the data in the m2m model, and we should do this after save because
             # order should have id to

@@ -5,10 +5,12 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import slugify
 from django.views import View
+
+from accounts.context_processors import get_vendor
 from accounts.forms import UserForm
 from accounts.models import User, UserProfile
 from accounts.utils import detectuser
-from orders.models import Order
+from orders.models import Order, OrderedFood
 from vendor.forms import VendorForm
 from vendor.models import Vendor
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -220,10 +222,14 @@ class VendorDashboardView(LoginRequiredMixin, View):
         # vendors m2m tabel
         orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
         recent_orders = orders[:5]
+
+        subtotal =
+
         context = {
             'orders': orders,
             'orders_count': orders.count(),
             'recent_orders': recent_orders,
+
 
         }
         if role == 1:
