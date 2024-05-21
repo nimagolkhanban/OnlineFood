@@ -215,8 +215,17 @@ class VendorDashboardView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         role = user.role
+        vendor = Vendor.objects.get(user=request.user)
+        # tip: the code bellow is really cool because with 'in' we search for the id of the vendor we have in the
+        # vendors m2m tabel
+        orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
+        context = {
+            'orders': orders,
+            'orders_count': orders.count(),
+
+        }
         if role == 1:
-            return render(request, 'accounts/vendor_dashboard.html')
+            return render(request, 'accounts/vendor_dashboard.html', context)
         elif role == 2:
             return redirect("customerdashboard")
         elif role == None or user.is_admin:
