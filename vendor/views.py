@@ -328,6 +328,26 @@ class VendorOrderDetailView(LoginRequiredMixin,View):
             return redirect('vendordashboard')
 
 
+class MyOrdersView(LoginRequiredMixin,View):
+    login_url = '/accounts/login/'
+    redirect_field_name = 'login'
+    def get(self, request):
+        vendor = Vendor.objects.get(user=request.user)
+        orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
+        context = {
+            'orders': orders,
+            'vendor': vendor,
+        }
+        return render(request, 'vendor/vendor_my_orders.html', context)
+
+
+
+
+
+
+
+
+
 
 
 

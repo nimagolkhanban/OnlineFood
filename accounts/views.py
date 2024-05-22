@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -230,11 +232,18 @@ class VendorDashboardView(LoginRequiredMixin, View):
         for i in orders:
             total_revenue += float(i.get_total_by_vendor())
 
+        current_month = datetime.now().month
+        current_month_orders = orders.filter(vendors__in=[vendor.id], created_at__month=current_month)
+        current_month_revenue = 0
+        for i in current_month_orders:
+            current_month_revenue += float(i.get_total_by_vendor())
+
         context = {
             'orders': orders,
             'orders_count': orders.count(),
             'recent_orders': recent_orders,
             'total_revenue': total_revenue,
+            'current_month_revenue': current_month_revenue,
 
 
         }

@@ -19,7 +19,7 @@ urlpatterns = [
     # opening hour multiple form handel in one url
     path('opening-hour/', views.OpeningHourView.as_view(), name='opening-hour'),
     path('opening-hour/remove/<int:pk>/', views.RemoveOpeningHourView.as_view(), name='remove-opening-hour'),
-    path('vendor-order-detail/<int:order_number>/', views.VendorOrderDetailView.as_view(), name='vendor-order-detail')
-
+    path('vendor-order-detail/<int:order_number>/', views.VendorOrderDetailView.as_view(), name='vendor-order-detail'),
+    path('my-orders/', views.MyOrdersView.as_view(), name='vendor-my-orders'),
 
 ]
