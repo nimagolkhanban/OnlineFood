@@ -1,0 +1,5 @@
+{
+  "django": {
+    "settingsFile": "foodOnline_main/settings.py"
+  }
+}
