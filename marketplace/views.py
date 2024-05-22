@@ -1,4 +1,6 @@
+import json
 from datetime import date, datetime
+from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -187,15 +189,15 @@ class CheckOutView(LoginRequiredMixin, View):
         k = {}
         for i in cart_items:
             fooditem = FoodItem.objects.get(pk=i.fooditem.id, vendor__id__in=vendors_id)
-            v_id = fooditem.vendor.id
-            if v_id in k:
-                subtotal = k[v_id]
-                subtotal += str(fooditem.price * i.quantity)
-                k[v_id] = subtotal
-            else:
-                subtotal = str(fooditem.price * i.quantity)
-                k[v_id] = subtotal
+            v_id = str(fooditem.vendor.id)
 
+            price_total = fooditem.price * i.quantity
+            if v_id in k:
+                subtotal = Decimal(k[v_id])
+                subtotal += price_total
+            else:
+                subtotal = price_total
+            k[v_id] = str(subtotal)
 
 
         account_balance = AccountBalance.objects.get(user=request.user)
@@ -213,7 +215,7 @@ class CheckOutView(LoginRequiredMixin, View):
             my_order.total = order_grand_total_price
             my_order.status = 'Completed'
             my_order.is_ordered = True
-            my_order.total_data = k
+            my_order.total_data = json.dumps(k)
             my_order.save()
             # tip: we should use * and add to add the data in the m2m model, and we should do this after save because
             # order should have id to

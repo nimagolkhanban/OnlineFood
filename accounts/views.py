@@ -223,7 +223,7 @@ class VendorDashboardView(LoginRequiredMixin, View):
         orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
         recent_orders = orders[:5]
 
-        subtotal =
+
 
         context = {
             'orders': orders,

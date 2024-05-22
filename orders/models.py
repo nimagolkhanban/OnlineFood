@@ -1,8 +1,11 @@
+
 from django.db import models
+import json
 from accounts.models import User
 from menu.models import FoodItem
 from vendor.models import Vendor
 
+request_object = ''
 
 class AccountBalance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -52,7 +55,13 @@ class Order(models.Model):
     def __str__(self):
         return self.order_number
 
-
+    def get_total_by_vendor(self):
+        vendor = Vendor.objects.get(user=request_object.user)
+        if self.total_data:
+            total_data = json.loads(str(self.total_data))
+            data = total_data.get(str(vendor.id))
+            print(data)
+            return data
 
 
 class OrderedFood(models.Model):
