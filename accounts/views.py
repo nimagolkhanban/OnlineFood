@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import slugify
 from django.views import View
+from unicodedata import decimal
 
 from accounts.context_processors import get_vendor
 from accounts.forms import UserForm
@@ -215,6 +216,8 @@ class VendorDashboardView(LoginRequiredMixin, View):
     redirect_field_name = 'login'
 
     def get(self, request):
+
+
         user = request.user
         role = user.role
         vendor = Vendor.objects.get(user=request.user)
@@ -222,13 +225,16 @@ class VendorDashboardView(LoginRequiredMixin, View):
         # vendors m2m tabel
         orders = Order.objects.filter(vendors__in=[vendor.id], is_ordered=True).order_by('-created_at')
         recent_orders = orders[:5]
-
-
+        # tip: this part is for analytic data
+        total_revenue = 0
+        for i in orders:
+            total_revenue += float(i.get_total_by_vendor())
 
         context = {
             'orders': orders,
             'orders_count': orders.count(),
             'recent_orders': recent_orders,
+            'total_revenue': total_revenue,
 
 
         }

@@ -71,7 +71,7 @@
                             {% if request.user.is_authenticated %}
                                 <a href="{% url 'cart' %}" style="margin-right: 12px; top: 2px; position:relative; border: #C33332 solid thin; padding: 9px 9px; border-radius: 10px">
                                          <i class="fa fa-money text-danger" style="font-size: 20px"></i>
-                                <span class="badge badge-warning" style="border-radius:10px ;position: relative; background-color: #ab1526; height: 25px; bottom: 5px">{{ amount }}</span>
+                                <span class="badge badge-warning" style="border-radius:10px ;position: relative; background-color: #ab1526; height: 25px; bottom: 5px">{{ amount |floatformat:2 }}</span>
                                     </a>
                                
                             	<a href="{% url 'cart' %}">

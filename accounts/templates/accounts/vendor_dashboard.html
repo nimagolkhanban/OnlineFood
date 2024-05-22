@@ -111,7 +111,7 @@
                                                     Total Revenue
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    123$
+                                                    ${{ total_revenue }}
                                                 </div>
                                             </div>
                                         </div>
@@ -135,9 +135,9 @@
                                                     <table class="table table-hover" id="myOrdersTable">
                                                     <thead>
                                                     <tr>
-                                                        <th scope="col">Order #</th>
+                                                        <th scope="col">Order CODE</th>
                                                         <th scope="col">Name</th>
-                                                        <th scope="col">Total</th>
+                                                        <th scope="col">Total NO TAX</th>
                                                         <th scope="col">Status</th>
                                                         <th scope="col">Date</th>
                                                         <th scope="col">Action</th>
@@ -148,7 +148,7 @@
                                                         <tr>
                                                             <td>{{ order.order_number }}</td>
                                                             <td>{{ order.name }}</td>
-                                                            <td>${{ order.get_total_by_vendor }}</td>
+                                                            <td>${{ order.get_total_by_vendor |floatformat:2 }}</td>
                                                             <td>{{ order.status }}</td>
                                                             <td>{{ order.created_at }}</td>
                                                             <td><a href="{% url 'vendor-order-detail' order.order_number %}"

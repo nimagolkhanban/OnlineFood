@@ -60,7 +60,6 @@ class Order(models.Model):
         if self.total_data:
             total_data = json.loads(str(self.total_data))
             data = total_data.get(str(vendor.id))
-            print(data)
             return data
 
 
